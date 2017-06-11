@@ -4,6 +4,7 @@ import generated.LoginMessageType;
 import generated.MazeCom;
 import generated.MazeComType;
 import generated.ObjectFactory;
+import ki.Ki;
 import network.XmlOutStream;
 
 import javax.net.SocketFactory;
@@ -15,16 +16,15 @@ import java.net.Socket;
 import java.util.Properties;
 import java.util.Scanner;
 
+@SuppressWarnings("FieldCanBeLocal")
 public final class GameClient {
 
     private static final String GROUPNAME = "4 und ein Keks Destroyer";
-    private XmlOutStream outToServer;
+    private static XmlOutStream outToServer;
     private static Scanner scanner = new Scanner(System.in);
-    private BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
     private static boolean running = true;
     private static Socket socket;
     private static ObjectFactory objectFactory = new ObjectFactory();
-    private static int playerID;
     private static String PATH_TO_PROPERTIES = "/config.properties";
 
     private GameClient(Socket socket) throws IOException {
@@ -35,6 +35,7 @@ public final class GameClient {
     public static void main(String[] args) throws Throwable {
 
         // Load properties
+        // TODO Ask if SSL connection is required and build or remove code
 //        System.setProperty("javax.net.ssl.trustStore", "src/main/resources/truststore.jks");
 //        System.setProperty("javax.net.ssl.trustStorePassword", "pwgen");
         Properties properties = new Properties();
@@ -65,10 +66,6 @@ public final class GameClient {
         }
     }
 
-    static void setPlayerID(int playerID) {
-        GameClient.playerID = playerID;
-    }
-
     private void login() {
         MazeCom mc_login = objectFactory.createMazeCom();
         LoginMessageType login = objectFactory.createLoginMessageType();
@@ -79,7 +76,7 @@ public final class GameClient {
     }
 
     static void awaitMoveCallBack(MazeCom oldSituation) {
-        // TODO
+        outToServer.write(Ki.calculateTurn(oldSituation));
     }
 
 

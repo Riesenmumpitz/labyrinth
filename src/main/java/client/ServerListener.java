@@ -8,7 +8,7 @@ import javax.xml.bind.UnmarshalException;
 import java.io.IOException;
 import java.net.Socket;
 
-public final class  ServerListener extends Thread {
+public final class ServerListener extends Thread {
 
     private static XmlInStream fromServer;
 
@@ -32,24 +32,29 @@ public final class  ServerListener extends Thread {
             return;
         }
 
-        systemOut.write(msg);
+//        systemOut.write(msg);
 
         switch (msg.getMcType()) {
 
             case LOGINREPLY:
-                System.out.println("Server let us log in");
-                GameClient.setPlayerID(msg.getLoginReplyMessage().getNewID());
+                System.out.println("Successfully logged in");
                 break;
             case AWAITMOVE:
                 System.out.println("Server awaits move");
                 GameClient.awaitMoveCallBack(msg);
                 break;
             case ACCEPT:
-                System.out.println("Server says ok. :o)");
+                System.out.println("Server accepted last sent message");
                 break;
             case WIN:
-                System.out.println("Somebody has won. Exiting...");
-                System.exit(0);
+                if (msg.getWinMessage() == null) {
+                    System.out.println("Win message without contents. Exiting..");
+                } else if (msg.getWinMessage().getWinner() == null) {
+                    System.out.println("Win message but no winner. Exiting...");
+                } else {
+                    System.out.println(msg.getWinMessage().getWinner() + " has won. Exiting...");
+                }
+                GameClient.exitCallBack();
                 break;
             case DISCONNECT:
                 System.out.println("Lost Connection to the server. Exiting...");
