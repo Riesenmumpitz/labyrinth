@@ -10,11 +10,11 @@ public class UTFInputStream {
 
 	private InputStream is;
 
-	public UTFInputStream(InputStream stream) {
+	UTFInputStream(InputStream stream) {
 		this.is = stream;
 	}
 
-	public String readUTF8() throws IOException {
+	String readUTF8() throws IOException {
 		ByteBuffer bf = ByteBuffer.wrap(this.readNBytes(4));
 		bf.order(ByteOrder.BIG_ENDIAN); // Java always use hostorder. See javadoc
 		byte[] bytes = this.readNBytes(bf.getInt(0));

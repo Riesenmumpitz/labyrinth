@@ -8,14 +8,12 @@ import javax.xml.bind.UnmarshalException;
 import java.io.IOException;
 import java.net.Socket;
 
-public class ServerListener extends Thread {
+public final class  ServerListener extends Thread {
 
-    private Socket socket;
     private static XmlInStream fromServer;
 
-    public ServerListener(Socket socket) throws IOException {
-        this.socket = socket;
-        fromServer = new XmlInStream(this.socket.getInputStream());
+    ServerListener(Socket socket) throws IOException {
+        fromServer = new XmlInStream(socket.getInputStream());
     }
 
     @Override
@@ -29,7 +27,7 @@ public class ServerListener extends Thread {
     //TODO remove
     private XmlOutStream systemOut = new XmlOutStream(System.out);
 
-    public void processReceivedMessage(MazeCom msg) {
+    private void processReceivedMessage(MazeCom msg) {
         if (msg == null) {
             return;
         }
@@ -60,12 +58,10 @@ public class ServerListener extends Thread {
         }
     }
 
-    public MazeCom waitForMessage() {
+    private MazeCom waitForMessage() {
         try {
             return fromServer.readMazeCom();
-        } catch (UnmarshalException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (UnmarshalException | IOException e) {
             e.printStackTrace();
         }
         return null;

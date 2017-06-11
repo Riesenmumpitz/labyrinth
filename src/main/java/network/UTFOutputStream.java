@@ -9,11 +9,11 @@ public class UTFOutputStream {
 
 	private OutputStream os;
 
-	public UTFOutputStream(OutputStream stream) {
+	UTFOutputStream(OutputStream stream) {
 		os = stream;
 	}
 
-	public void writeUTF8(String text) throws IOException {
+	void writeUTF8(String text) throws IOException {
 		byte[] bytes = text.getBytes("UTF-8"); //$NON-NLS-1$
 		ByteBuffer bf = ByteBuffer.allocate(4);
 		bf.order(ByteOrder.BIG_ENDIAN); // Transform to network order
@@ -22,7 +22,7 @@ public class UTFOutputStream {
 		os.write(bytes);
 	}
 
-	public void flush() throws IOException {
+	void flush() throws IOException {
 		os.flush();
 	}
 

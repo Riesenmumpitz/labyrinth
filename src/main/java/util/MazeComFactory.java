@@ -3,9 +3,10 @@ package util;
 import generated.*;
 
 /**
- * Created by Martin on 10.06.2017.
+ * Created by Martin Geßenich on 10.06.2017.
+ * Factory that creates {@link MazeCom} objects from special combinations of data
  */
-public class MazeComFactory {
+public final class MazeComFactory {
 
     private static ObjectFactory objectFactory = new ObjectFactory();
 

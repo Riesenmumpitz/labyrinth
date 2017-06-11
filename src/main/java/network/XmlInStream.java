@@ -12,7 +12,8 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.*;
 
-public class XmlInStream extends UTFInputStream {
+@SuppressWarnings("SpellCheckingInspection")
+public final class XmlInStream extends UTFInputStream {
 
 	private Unmarshaller unmarshaller;
 
@@ -34,7 +35,7 @@ public class XmlInStream extends UTFInputStream {
 				File tempFile = File.createTempFile("temp", ".xsd");  //$NON-NLS-1$//$NON-NLS-2$
 				FileOutputStream fileOutputStream = new FileOutputStream(
 						tempFile);
-				int read = 0;
+				int read;
 				byte[] b = new byte[1024];
 				while ((read = resourceAsStream.read(b)) != -1) {
 					fileOutputStream.write(b, 0, read);
@@ -44,26 +45,19 @@ public class XmlInStream extends UTFInputStream {
 				Schema schema = schemaFactory.newSchema(tempFile);
 				unmarshaller.setSchema(schema);
 				tempFile.deleteOnExit();
-			} catch (SAXException e) {
-				e.printStackTrace();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
+			} catch (SAXException | IOException e) {
 				e.printStackTrace();
 			}
-		} catch (JAXBException e) {
+        } catch (JAXBException e) {
 			e.printStackTrace();
 		}
 	}
 
 	/**
 	 * Liest eine Nachricht und gibt die entsprechende Instanz zurueck
-	 * 
-	 * @return
-	 * @throws IOException
 	 */
 	public MazeCom readMazeCom() throws IOException, UnmarshalException {
-		byte[] bytes = null;
+		byte[] bytes;
 		MazeCom result = null;
 		try {
 			String xml = this.readUTF8();
@@ -72,12 +66,10 @@ public class XmlInStream extends UTFInputStream {
 			result = (MazeCom) this.unmarshaller.unmarshal(bais);
 		} catch (UnmarshalException e) {
 			throw e;
-		} catch (JAXBException e) {
+		} catch (JAXBException | NullPointerException e) {
 			e.printStackTrace();
-		} catch (NullPointerException e) {
-		    e.printStackTrace();
 		}
-		return result;
+        return result;
 	}
 
 }

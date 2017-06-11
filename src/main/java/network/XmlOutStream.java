@@ -10,7 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class XmlOutStream extends UTFOutputStream {
+public final class XmlOutStream extends UTFOutputStream {
 
     private Marshaller marshaller;
 
@@ -29,7 +29,7 @@ public class XmlOutStream extends UTFOutputStream {
     /**
      * Versenden einer XML Nachricht
      *
-     * @param mc
+     * @param mc Mazecom to write
      */
     public void write(MazeCom mc) {
         // generierung des fertigen XML
@@ -39,10 +39,8 @@ public class XmlOutStream extends UTFOutputStream {
             // Versenden des XML
             this.writeUTF8(new String(byteArrayOutputStream.toByteArray()));
             this.flush();
-        } catch (IOException e) {
+        } catch (IOException | JAXBException e) {
             e.printStackTrace();
-        } catch (JAXBException e1) {
-            e1.printStackTrace();
         }
     }
 

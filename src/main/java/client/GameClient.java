@@ -15,7 +15,7 @@ import java.net.Socket;
 import java.util.Properties;
 import java.util.Scanner;
 
-public class GameClient {
+public final class GameClient {
 
     private static final String GROUPNAME = "4 und ein Keks Destroyer";
     private XmlOutStream outToServer;
@@ -27,7 +27,7 @@ public class GameClient {
     private static int playerID;
     private static String PATH_TO_PROPERTIES = "/config.properties";
 
-    public GameClient(Socket socket) throws IOException {
+    private GameClient(Socket socket) throws IOException {
         GameClient.socket = socket;
         outToServer = new XmlOutStream(GameClient.socket.getOutputStream());
     }
