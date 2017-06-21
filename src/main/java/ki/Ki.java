@@ -15,6 +15,7 @@ import util.MazeComFactory;
 
 /**
  * Created by Martin on 10.06.2017.
+ * reworked by Dana, Marie, Martin on 21.06.2017
  */
 public final class Ki {
 
