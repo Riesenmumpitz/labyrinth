@@ -83,7 +83,8 @@ public final class Ki {
 	}
 
 	private static boolean loosePosition(int zeile, int spalte) {
-    	return (zeile == 0 || zeile == 6)
+//    	return (zeile == 0 || zeile == 6)
+        return false;
 	}
 
 
