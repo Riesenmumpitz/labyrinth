@@ -1,7 +1,6 @@
 package ki;
 
 import generated.*;
-import helpers.Board;
 import helpers.Card;
 import util.MazeComFactory;
 
@@ -24,7 +23,7 @@ public class Human {
         MoveMessageType move = boardTest(gameSituation);
 
 
-        return MazeComFactory.createMoveMessage(gameSituation.getId(), move);
+        return MazeComFactory.createMazeComMove(gameSituation.getId(), move);
     }
 
     private static MoveMessageType boardTest(MazeCom gameSituation) {
