@@ -49,7 +49,7 @@ public final class Ki {
 					if (spalte== 2|| spalte ==4){
 						continue;
 					}
-					if(loosePosition(zeile,spalte)){
+					if(!loosePosition(zeile,spalte)){
 						continue;
 					}
 					PositionType position = new PositionType();
@@ -83,7 +83,7 @@ public final class Ki {
 	}
 
 	private static boolean loosePosition(int zeile, int spalte) {
-    	return false;
+    	return (zeile == 0 || zeile == 6)
 	}
 
 
