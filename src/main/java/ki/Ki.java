@@ -49,6 +49,9 @@ public final class Ki {
 					if (spalte== 2|| spalte ==4){
 						continue;
 					}
+					if(loosePosition(zeile,spalte)){
+						continue;
+					}
 					PositionType position = new PositionType();
 					position.setRow(zeile);
 					position.setCol(spalte);
@@ -78,6 +81,10 @@ public final class Ki {
 		}
 		return null;
 	}
-    
-   
+
+	private static boolean loosePosition(int zeile, int spalte) {
+    	return false;
+	}
+
+
 }
