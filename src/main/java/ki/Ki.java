@@ -24,9 +24,9 @@ public final class Ki {
         if (directmove == null) {
             return generateRandomMove(gameSituation);
         } else {
-            MazeCom ret = new MazeCom();
-            ret.setMoveMessage(directmove);
-            return ret;
+//            MazeCom ret = new MazeCom();
+//            ret.setMoveMessage(directmove);
+            return MazeComFactory.createMazeComMove(gameSituation.getId(),directmove);
         }
     }
 
