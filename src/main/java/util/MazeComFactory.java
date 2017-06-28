@@ -10,12 +10,20 @@ public final class MazeComFactory {
 
     private static ObjectFactory objectFactory = new ObjectFactory();
 
-    public static MazeCom createMoveMessage(int playerID, MoveMessageType move) {
+    public static MazeCom createMazeComMove(int playerID, MoveMessageType move) {
         MazeCom mc = objectFactory.createMazeCom();
         mc.setMcType(MazeComType.MOVE);
         mc.setId(playerID);
 
         mc.setMoveMessage(move);
         return mc;
+    }
+
+    public static MoveMessageType createMoveMessage(PositionType pinPosition, CardType shiftCard, PositionType shiftPosition){
+        MoveMessageType move = objectFactory.createMoveMessageType();
+        move.setNewPinPos(pinPosition);
+        move.setShiftCard(shiftCard);
+        move.setShiftPosition(shiftPosition);
+        return move;
     }
 }
