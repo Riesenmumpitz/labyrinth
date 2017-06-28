@@ -1,7 +1,7 @@
 //
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
+// ï¿½nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
 // Generiert: 2017.06.10 um 01:27:34 PM CEST 
 //
 
@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für positionType complex type.
+ * <p>Java-Klasse fï¿½r positionType complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
@@ -75,4 +75,10 @@ public class PositionType {
         this.col = value;
     }
 
+    @Override
+    public String toString() {
+        return "(" + row +
+                "," + col +
+                ')';
+    }
 }

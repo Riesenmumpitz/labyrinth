@@ -94,4 +94,7 @@ public class Position extends PositionType {
 		return "(" + col + "," + row + ")"; //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 	}
 
+	public Position flip(){
+		return new Position(col,row);
+	}
 }
