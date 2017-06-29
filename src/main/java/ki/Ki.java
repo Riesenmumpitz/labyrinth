@@ -25,8 +25,10 @@ public final class Ki {
 
         MoveMessageType directMove = findDirectMove(gameSituation);
         if (directMove == null) {
+            System.out.println("----- Random Move ");
             return generateRandomMove(gameSituation);
         } else {
+            System.out.println("+++++ Direct Move ");
             return MazeComFactory.createMazeComMove(gameSituation.getId(),directMove);
         }
     }
@@ -39,31 +41,73 @@ public final class Ki {
 
         CardType shiftCard = cardrotations.get(randomNum);
         PositionType playerPosition = getPlayerPosition(gameSituation, new Board(gameSituation.getAwaitMoveMessage().getBoard()));
-        PositionType randomPlayerPosition = getRandomPlayerPosition(gameSituation, playerPosition);
         PositionType randomShiftPosition = getRandomShiftPosition(gameSituation);
+        PositionType closestPlayerPosition = getClosestPlayerPosition(gameSituation,randomShiftPosition);
+        MoveMessageType move = MazeComFactory.createMoveMessage(closestPlayerPosition, shiftCard, randomShiftPosition);
 
-        MoveMessageType move = MazeComFactory.createMoveMessage(randomPlayerPosition, shiftCard, randomShiftPosition);
+        // FIXME OLD VERSION
+//        PositionType randomPlayerPosition = getRandomPlayerPosition(gameSituation, playerPosition);
+//        MoveMessageType move = MazeComFactory.createMoveMessage(randomPlayerPosition, shiftCard, randomShiftPosition);
+
 
         return MazeComFactory.createMazeComMove(gameSituation.getId(),move);
     }
-    
+
+    private static PositionType getClosestPlayerPosition(MazeCom gameSituation, PositionType randomShiftPosition) {
+        Board board = new Board(gameSituation.getAwaitMoveMessage().getBoard());
+        PositionType currentPlayerPosition = board.findPlayer(gameSituation.getId());
+        CardType currentCard = gameSituation.getAwaitMoveMessage().getBoard().getShiftCard();
+        Board fakeBoard = board.fakeShift(MazeComFactory.createMoveMessage(currentPlayerPosition, currentCard, randomShiftPosition));
+        List<Position> listOfPositions = fakeBoard.getAllReachablePositions(currentPlayerPosition);
+        PositionType treasurePosition = board.findTreasure(gameSituation.getAwaitMoveMessage().getTreasure());
+        return findClosestPosition(listOfPositions,treasurePosition);
+    }
+
+    private static PositionType findClosestPosition(List<Position> listOfPositions, PositionType currentPlayerPosition) {
+        int currentDistance = Integer.MAX_VALUE;
+        PositionType closestPosition = null;
+        for (Position p : listOfPositions) {
+            int distance = calculateDistance(p,currentPlayerPosition);
+            if (distance < currentDistance) closestPosition = p;
+        }
+        System.out.println("Found closest space " + closestPosition);
+        return closestPosition;
+    }
+
+    private static int calculateDistance(Position p, PositionType currentPlayerPosition) {
+        int distance = Math.abs(currentPlayerPosition.getCol() - p.getCol()) + Math.abs(currentPlayerPosition.getRow() - p.getRow());
+        System.out.println("Distance between " + currentPlayerPosition + " and " + p + " is " + distance);
+        return distance;
+    }
+
     private static PositionType getRandomPlayerPosition(MazeCom gameSituation, PositionType playerPosition){
-         AwaitMoveMessageType awaitMoveMessage = gameSituation.getAwaitMoveMessage();
-         Board board = new Board(awaitMoveMessage.getBoard());
-         List<Position> allreachablePositions= board.getAllReachablePositions(playerPosition);
-         int random = ThreadLocalRandom.current().nextInt(0, allreachablePositions.size());
-         return allreachablePositions.get(random);
+        return playerPosition; // FIXME seems easier for me
+        // FIXME dieser Code funktioniert nur ungenügend, da er nicht berücksichtigt, dass sich das board beim
+        // FIXME verschieben ändert
+//         AwaitMoveMessageType awaitMoveMessage = gameSituation.getAwaitMoveMessage();
+//         Board board = new Board(awaitMoveMessage.getBoard());
+//         List<Position> allreachablePositions= board.getAllReachablePositions(playerPosition);
+//         int random = ThreadLocalRandom.current().nextInt(0, allreachablePositions.size());
+//         return allreachablePositions.get(random);
     }
 
     private static PositionType getRandomShiftPosition(MazeCom gameSituation) {
-        int zeile;
-        int spalte;
-        BoardType board = gameSituation.getAwaitMoveMessage().getBoard();
+        // FIXME OLD
+//        int zeile;
+//        int spalte;
+//        BoardType board = gameSituation.getAwaitMoveMessage().getBoard();
+//        do {
+//            zeile = ThreadLocalRandom.current().nextInt(0, 7);
+//            spalte = ThreadLocalRandom.current().nextInt(0, 7);
+//        } while (!loosePosition(zeile, spalte) && forbidden(createPositionType(zeile, spalte), board.getForbidden()));
+//        return createPositionType(spalte, zeile);
+
+        List<Position> possiblePositions = Position.getPossiblePositionsForShiftcard();
+        int random ;
         do {
-            zeile = ThreadLocalRandom.current().nextInt(0, 7);
-            spalte = ThreadLocalRandom.current().nextInt(0, 7);
-        } while (!loosePosition(zeile, spalte) && !forbidden(createPositionType(zeile, spalte), board.getForbidden()));
-        return createPositionType(zeile, spalte);
+             random = ThreadLocalRandom.current().nextInt(0, possiblePositions.size()+1);
+        } while (possiblePositions.get(random).equals(gameSituation.getAwaitMoveMessage().getBoard().getForbidden()));
+        return possiblePositions.get(random);
     }
 
     private static boolean forbidden(PositionType positionType, PositionType forbidden) {
@@ -75,16 +119,21 @@ public final class Ki {
     }
 
     private static MoveMessageType findDirectMove(MazeCom gameSituation) {
+        System.out.println("-----------------------------------------------------------------------");
+        System.out.println("-----------------------next calculation--------------------------------");
+        System.out.println("-----------------------------------------------------------------------");
         MoveMessageType ret = new MoveMessageType();
         AwaitMoveMessageType awaitMoveMessage = gameSituation.getAwaitMoveMessage();
         Board board = new Board(awaitMoveMessage.getBoard());
 //        System.out.println(board.toString());
-        System.out.println("Before card, player can move to :");
-        System.out.println(board.getAllReachablePositions(board.findPlayer(gameSituation.getId())));
-        System.out.println("Treasure at " + new Position(board.findTreasure(awaitMoveMessage.getTreasure())));
-        scanner.nextLine();
+        System.out.println("Player standing at " + getPlayerPosition(gameSituation, board));
+//        System.out.println("Before card, player can move to :");
+//        System.out.println(board.getAllReachablePositions(board.findPlayer(gameSituation.getId())));
+        System.out.println("Treasure at " + board.findTreasure(awaitMoveMessage.getTreasure()));
+//        scanner.nextLine();
+        System.out.println("Current forbidden position = " + board.getForbidden());
 
-        System.out.println("Current shiftCard" + awaitMoveMessage.getBoard().getShiftCard());
+//        System.out.println("Current shiftCard" + awaitMoveMessage.getBoard().getShiftCard());
 
         Card card = new Card(awaitMoveMessage.getBoard().getShiftCard());
         List<Card> cardRotations = card.getPossibleRotations();
@@ -107,7 +156,7 @@ public final class Ki {
                         continue;
                     }
 
-                    System.out.println("Current orientation " + c);
+//                    System.out.println("Current orientation " + c);
 
                     MoveMessageType fakeMove = new MoveMessageType();
                     fakeMove.setShiftPosition(fakeShiftCardPosition);
@@ -118,16 +167,17 @@ public final class Ki {
 
 
                     List<Position> reachablePositions = fakeBoard.getAllReachablePositions(playerposition);
-                    // TODO REMOVE >>>>>>>>>
-                    System.out.println("zeile = " + zeile + " spalte = " + spalte );
-                    System.out.println("After entering card at "+ fakeShiftCardPosition + ", player can move to :");
-                    System.out.println(reachablePositions);
-                    System.out.println(fakeBoard);
-                    scanner.nextLine();
-                    // TODO REMOVE <<<<<<<<<<
                     Position treasurePosition = new Position(fakeBoard.findTreasure(awaitMoveMessage.getTreasure()));
                     for (Position p : reachablePositions) {
                         if (p.equals(treasurePosition)) {
+                            // TODO REMOVE >>>>>>>>>
+//                    System.out.println("zeile = " + zeile + " spalte = " + spalte );
+                            System.out.println("!!!!!!!!!!!!!!!!!!!! Found direct move!!!");
+                            System.out.println("After entering card at "+ fakeShiftCardPosition + ", player can move to :");
+                            System.out.println(reachablePositions);
+                    System.out.println(fakeBoard);
+//                    scanner.nextLine();
+                            // TODO REMOVE <<<<<<<<<<
                             ret.setNewPinPos(p);
                             ret.setShiftCard(c);
                             ret.setShiftPosition(fakeShiftCardPosition);
@@ -143,18 +193,18 @@ public final class Ki {
         return null;
     }
 
-    /**
-     * Nur temporär, weil ich dachte, die Werte zu vertauschen hilft, es werden aber alle vertauscht zurückgegeben,
-     * daher sind es zu viele um alles mitzuhalten...
-     */
-    @Deprecated
-    private static List<Position> flip(List<Position> positions) {
-        List<Position> result = Lists.newArrayList();
-        for (int i = 0; i < positions.size(); i++) {
-            result.add(positions.get(i).flip());
-        }
-        return result;
-    }
+//    /**
+//     * Nur temporär, weil ich dachte, die Werte zu vertauschen hilft, es werden aber alle vertauscht zurückgegeben,
+//     * daher sind es zu viele um alles mitzuhalten...
+//     */
+//    @Deprecated
+//    private static List<Position> flip(List<Position> positions) {
+//        List<Position> result = Lists.newArrayList();
+//        for (int i = 0; i < positions.size(); i++) {
+//            result.add(positions.get(i).flip());
+//        }
+//        return result;
+//    }
 
     private static PositionType createPositionType(int zeile, int spalte) {
         PositionType position = new PositionType();
