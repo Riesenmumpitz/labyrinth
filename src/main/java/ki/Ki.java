@@ -21,15 +21,21 @@ public final class Ki {
 
     private static ObjectFactory objectFactory = new ObjectFactory();
     private static Scanner scanner = new Scanner(System.in);
+    private static int directCounter = 0;
+    private static int randomCounter = 0;
 
     public static MazeCom calculateTurn(MazeCom gameSituation) {
 
         MoveMessageType directMove = findDirectMove(gameSituation);
         if (directMove == null) {
             System.out.println("----- Random Move ");
+            randomCounter++;
+            System.out.println("randomCounter=" + randomCounter + " directCounter="+directCounter);
             return generateRandomMove(gameSituation);
         } else {
             System.out.println("+++++ Direct Move ");
+            directCounter++;
+            System.out.println("randomCounter=" + randomCounter + " directCounter="+directCounter);
             return MazeComFactory.createMazeComMove(gameSituation.getId(), directMove);
         }
     }
@@ -64,27 +70,34 @@ public final class Ki {
         return findClosestPosition(listOfPositions, treasurePosition);
     }
 
-    private static Position findClosestPosition(List<Position> listOfPositions, Position currentPlayerPosition) {
+    private static Position findClosestPosition(List<Position> listOfPositions, Position treasurePosition) {
+        // Fall Karte schieben schmeißt Schatzkarte raus
+        if (treasurePosition == null){
+            int random = ThreadLocalRandom.current().nextInt(0, listOfPositions.size());
+            return listOfPositions.get(random);
+        }
+
+        // Normalfall
         int currentDistance = Integer.MAX_VALUE;
         List<Position> closestPositions = Lists.newArrayList();
-        for (Position p : listOfPositions) {
-            int distance = calculateDistance(p, currentPlayerPosition);
+        for (Position possiblePlayerPosition : listOfPositions) {
+            int distance = calculateDistance(possiblePlayerPosition, treasurePosition);
             if (distance < currentDistance) {
                 closestPositions.clear();
-                closestPositions.add(p);
+                closestPositions.add(possiblePlayerPosition);
                 currentDistance = distance;
             } else if (distance == currentDistance) {
-                closestPositions.add(p);
+                closestPositions.add(possiblePlayerPosition);
             }
         }
-        System.out.println("Found closest space(s) " + closestPositions);
+//        System.out.println("Found closest space(s) " + closestPositions);
         int random = ThreadLocalRandom.current().nextInt(0, closestPositions.size());
         return closestPositions.get(random);
     }
 
     private static int calculateDistance(Position p, PositionType currentPlayerPosition) {
         int distance = Math.abs(currentPlayerPosition.getCol() - p.getCol()) + Math.abs(currentPlayerPosition.getRow() - p.getRow());
-        System.out.println("Distance between " + currentPlayerPosition + " and " + p + " is " + distance);
+//        System.out.println("Distance between " + currentPlayerPosition + " and " + p + " is " + distance);
         return distance;
     }
 
@@ -127,27 +140,27 @@ public final class Ki {
     }
 
     private static MoveMessageType findDirectMove(MazeCom gameSituation) {
-        System.out.println("-----------------------------------------------------------------------");
-        System.out.println("-----------------------next calculation--------------------------------");
-        System.out.println("-----------------------------------------------------------------------");
+//        System.out.println("-----------------------------------------------------------------------");
+//        System.out.println("-----------------------next calculation--------------------------------");
+//        System.out.println("-----------------------------------------------------------------------");
         MoveMessageType ret = new MoveMessageType();
         AwaitMoveMessageType awaitMoveMessage = gameSituation.getAwaitMoveMessage();
         Board board = new Board(awaitMoveMessage.getBoard());
 //        System.out.println(board.toString());
-        System.out.println("Player standing at " + getPlayerPosition(gameSituation, board));
+//        System.out.println("Player standing at " + getPlayerPosition(gameSituation, board));
 //        System.out.println("Before card, player can move to :");
 //        System.out.println(board.getAllReachablePositions(board.findPlayer(gameSituation.getId())));
-        System.out.println("Treasure at " + board.findTreasure(awaitMoveMessage.getTreasure()));
+//        System.out.println("Treasure at " + board.findTreasure(awaitMoveMessage.getTreasure()));
 //        scanner.nextLine();
-        System.out.println("Current forbidden position = " + board.getForbidden());
+//        System.out.println("Current forbidden position = " + board.getForbidden());
 
 //        System.out.println("Current shiftCard" + awaitMoveMessage.getBoard().getShiftCard());
 
         Card shiftCard = new Card(awaitMoveMessage.getBoard().getShiftCard());
         List<Card> cardRotations = shiftCard.getPossibleRotations();
         List<Position> allowedPositionsList = Position.getPossiblePositionsForShiftcard().stream().filter(position -> !position.equals(board.getForbidden())).collect(Collectors.toList());
-        System.out.println("allowedPositionsList=" + allowedPositionsList);
-        System.out.println("Card rotations = " + cardRotations);
+//        System.out.println("allowedPositionsList=" + allowedPositionsList);
+//        System.out.println("Card rotations = " + cardRotations);
 
         for (Card card : cardRotations) {
             for (Position cardPosition : allowedPositionsList) {
@@ -155,14 +168,16 @@ public final class Ki {
                 MoveMessageType fakeMove = MazeComFactory.createMoveMessage(shiftedPlayerposition, shiftCard, cardPosition);
                 Board fakeBoard = board.fakeShift(fakeMove);
                 List<Position> reachablePositions =fakeBoard.getAllReachablePositions(shiftedPlayerposition);
-                Position treasurePosition = new Position(fakeBoard.findTreasure(awaitMoveMessage.getTreasure()));
+                Position treasurePosition = fakeBoard.findTreasure(awaitMoveMessage.getTreasure());
+
+                if (treasurePosition == null) continue;
 
                 for (Position reachablePosition : reachablePositions) {
                     if (reachablePosition.equals(treasurePosition)) {
                         ret.setNewPinPos(reachablePosition);
                         ret.setShiftCard(card);
                         ret.setShiftPosition(cardPosition);
-                        System.out.println("Habe direkten move gefunden");
+//                        System.out.println("Habe direkten move gefunden");
 //                            System.out.println(ret.toString());
 //                            scanner.nextLine();
                         return ret;
@@ -237,10 +252,10 @@ public final class Ki {
     }
 
     public static Position calculatePlayerPosition(Position cardPosition, Position playerPosition) {
-        System.out.println("calculatePlayerPosition mit " + "cardPosition=" + cardPosition + " and playerPosition=" + playerPosition);
+//        System.out.println("calculatePlayerPosition mit " + "cardPosition=" + cardPosition + " and playerPosition=" + playerPosition);
         if (cardPosition.isOppositePosition(playerPosition)) {
             // Karte schiebt eigenen Spieler vom Feld und wird gegenüber wieder aufgestellt
-            System.out.println("Karte wird gegenüber von Spieler eingeschoben");
+//            System.out.println("Karte wird gegenüber von Spieler eingeschoben");
             return cardPosition;
         }
 //        else if (cardPosition.equals(playerPosition)) {
@@ -248,13 +263,13 @@ public final class Ki {
 //                return new Position()
 //        }
         else if (cardPosition.getCol() == playerPosition.getCol()) {
-            System.out.println("Karte wird in gleiche Spalte wie Spieler eingeschoben");
+//            System.out.println("Karte wird in gleiche Spalte wie Spieler eingeschoben");
             if (cardPosition.getRow() == 0)
                 return new Position(playerPosition.getRow() + 1, playerPosition.getCol());
             else if (cardPosition.getRow() == 6)
                 return new Position(playerPosition.getRow() - 1, playerPosition.getCol());
         } else if (cardPosition.getRow() == playerPosition.getRow()) {
-            System.out.println("Karte wird in gleiche Zeile wie Spieler eingeschoben");
+//            System.out.println("Karte wird in gleiche Zeile wie Spieler eingeschoben");
             if (cardPosition.getCol() == 0)
                 return new Position(playerPosition.getRow(), playerPosition.getCol() + 1);
             else if (cardPosition.getCol() == 6)
