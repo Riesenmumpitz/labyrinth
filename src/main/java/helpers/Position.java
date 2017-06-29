@@ -91,10 +91,6 @@ public class Position extends PositionType {
 
 	@Override
 	public String toString() {
-		return "(" + col + "," + row + ")"; //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
-	}
-
-	public Position flip(){
-		return new Position(col,row);
+		return "(" + row + "," + col + ")";
 	}
 }
