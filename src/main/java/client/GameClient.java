@@ -71,9 +71,9 @@ public final class GameClient {
         MazeCom mc_login = objectFactory.createMazeCom();
         LoginMessageType login = objectFactory.createLoginMessageType();
         mc_login.setMcType(MazeComType.LOGIN);
-//        login.setName(GROUPNAME);
+        login.setName(GROUPNAME);
         String groupName = UUID.randomUUID().toString();
-        System.out.println("Playing as " + groupName);
+//        System.out.println("Playing as " + groupName);
         login.setName(groupName);
         mc_login.setLoginMessage(login);
         outToServer.write(mc_login);
