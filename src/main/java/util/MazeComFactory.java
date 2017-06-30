@@ -1,6 +1,7 @@
 package util;
 
 import generated.*;
+import helpers.Position;
 
 /**
  * Created by Martin Geßenich on 10.06.2017.
@@ -21,7 +22,7 @@ public final class MazeComFactory {
 
     public static MoveMessageType createMoveMessage(PositionType pinPosition, CardType shiftCard, PositionType shiftPosition){
         MoveMessageType move = objectFactory.createMoveMessageType();
-        move.setNewPinPos(pinPosition);
+        move.setNewPinPos(new Position(pinPosition));
         move.setShiftCard(shiftCard);
         move.setShiftPosition(shiftPosition);
         return move;

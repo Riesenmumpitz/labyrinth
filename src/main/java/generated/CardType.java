@@ -249,6 +249,15 @@ public class CardType {
             this.right = value;
         }
 
+        @Override
+        public String toString() {
+            return "Openings{" +
+                    "top=" + top +
+                    ", bottom=" + bottom +
+                    ", left=" + left +
+                    ", right=" + right +
+                    '}';
+        }
     }
 
 
@@ -309,6 +318,20 @@ public class CardType {
             return this.playerID;
         }
 
+        @Override
+        public String toString() {
+            return "Pin{" +
+                    "playerID=" + playerID +
+                    '}';
+        }
     }
 
+    @Override
+    public String toString() {
+        return "CardType{" +
+                "openings=" + openings +
+                ", pin=" + pin +
+                ", treasure=" + treasure +
+                '}';
+    }
 }

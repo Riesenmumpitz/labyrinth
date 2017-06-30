@@ -1,12 +1,14 @@
 //
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
+// ï¿½nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
 // Generiert: 2017.06.10 um 01:27:34 PM CEST 
 //
 
 
 package generated;
+
+import helpers.Card;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -15,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für MoveMessageType complex type.
+ * <p>Java-Klasse fï¿½r MoveMessageType complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
@@ -120,4 +122,12 @@ public class MoveMessageType {
         this.shiftCard = value;
     }
 
+    @Override
+    public String toString() {
+        return "MoveMessageType{" +
+                "Schiebe Karte in " + shiftPosition +
+                ", und gehe auf " + newPinPos +
+                '}' +
+                ", Kartentyp = \n" + new Card(shiftCard);
+    }
 }

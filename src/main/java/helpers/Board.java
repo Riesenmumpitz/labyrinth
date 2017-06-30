@@ -4,7 +4,6 @@ package helpers;
 import generated.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -434,7 +433,8 @@ public class Board extends BoardType {
         for (int i = 0; i < erreichbar.length; i++) {
             for (int j = 0; j < erreichbar[0].length; j++) {
                 if (erreichbar[i][j].getStepsFromSource() > -1) {
-                    erreichbarePositionen.add(new Position(i, j));
+//                    erreichbarePositionen.add(new Position(j, i)); // FIXME FLIPPED - MAYBE WRONG
+                    erreichbarePositionen.add(new Position(i,j));
                 }
             }
         }
@@ -504,13 +504,13 @@ public class Board extends BoardType {
     }
 
     public Position findPlayer(Integer PlayerID) {
-        for (int i = 0; i < 7; i++) {
-            for (int j = 0; j < 7; j++) {
-                CardType.Pin pinsOnCard = getCard(i, j).getPin();
+        for (int row = 0; row < 7; row++) {
+            for (int col = 0; col < 7; col++) {
+                CardType.Pin pinsOnCard = getCard(row, col).getPin();
                 for (Integer pin : pinsOnCard.getPlayerID()) {
                     if (pin == PlayerID) {
-                        Position pos = new Position(i,j);
-                        return pos;
+//                        return new Position(col,row); // FIXME REMOVE MAYBE WRONG
+                        return new Position(row, col);
                     }
                 }
             }
@@ -520,15 +520,13 @@ public class Board extends BoardType {
         return null;
     }
 
-    public PositionType findTreasure(TreasureType treasureType) {
-        for (int i = 0; i < 7; i++) {
-            for (int j = 0; j < 7; j++) {
-                TreasureType treasure = getCard(i, j).getTreasure();
+    public Position findTreasure(TreasureType treasureType) {
+        for (int row = 0; row < 7; row++) {
+            for (int col = 0; col < 7; col++) {
+                TreasureType treasure = getCard(row, col).getTreasure();
                 if (treasure == treasureType) {
-                    PositionType pos = new PositionType();
-                    pos.setCol(j);
-                    pos.setRow(i);
-                    return pos;
+//                    return new Position(col , row); // FIXME REMOVE MAYBE WRONG
+                    return new Position(row, col);
                 }
             }
         }
