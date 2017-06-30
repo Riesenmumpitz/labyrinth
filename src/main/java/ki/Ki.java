@@ -30,12 +30,12 @@ public final class Ki {
         if (directMove == null) {
             System.out.println("----- Random Move ");
             randomCounter++;
-            System.out.println("randomCounter=" + randomCounter + " directCounter="+directCounter);
+            System.out.println("randomCounter=" + randomCounter + " directCounter=" + directCounter);
             return generateRandomMove(gameSituation);
         } else {
             System.out.println("+++++ Direct Move ");
             directCounter++;
-            System.out.println("randomCounter=" + randomCounter + " directCounter="+directCounter);
+            System.out.println("randomCounter=" + randomCounter + " directCounter=" + directCounter);
             return MazeComFactory.createMazeComMove(gameSituation.getId(), directMove);
         }
     }
@@ -45,11 +45,11 @@ public final class Ki {
         Card card = new Card(awaitMoveMessage.getBoard().getShiftCard());
         List<Card> cardrotations = card.getPossibleRotations();
         int randomNum = ThreadLocalRandom.current().nextInt(0, cardrotations.size());
+        Card shiftCard = cardrotations.get(randomNum);
 
-        CardType shiftCard = cardrotations.get(randomNum);
 //        Position playerPosition = getPlayerPosition(gameSituation, new Board(gameSituation.getAwaitMoveMessage().getBoard()));
         Position randomShiftPosition = getRandomShiftPosition(gameSituation);
-        Position closestPlayerPosition = getClosestPlayerPosition(gameSituation, randomShiftPosition);
+        Position closestPlayerPosition = getClosestPlayerPosition(gameSituation, randomShiftPosition, shiftCard);
         MoveMessageType move = MazeComFactory.createMoveMessage(closestPlayerPosition, shiftCard, randomShiftPosition);
 
         // FIXME OLD VERSION
@@ -60,10 +60,9 @@ public final class Ki {
         return MazeComFactory.createMazeComMove(gameSituation.getId(), move);
     }
 
-    private static Position getClosestPlayerPosition(MazeCom gameSituation, Position randomShiftPosition) {
+    private static Position getClosestPlayerPosition(MazeCom gameSituation, Position randomShiftPosition, Card currentCard) {
         Board board = new Board(gameSituation.getAwaitMoveMessage().getBoard());
         Position shiftedPlayerPosition = calculatePlayerPosition(randomShiftPosition, getPlayerPosition(gameSituation, board));
-        CardType currentCard = gameSituation.getAwaitMoveMessage().getBoard().getShiftCard();
         Board fakeBoard = board.fakeShift(MazeComFactory.createMoveMessage(shiftedPlayerPosition, currentCard, randomShiftPosition));
         List<Position> listOfPositions = fakeBoard.getAllReachablePositions(shiftedPlayerPosition);
         Position treasurePosition = board.findTreasure(gameSituation.getAwaitMoveMessage().getTreasure());
@@ -72,7 +71,7 @@ public final class Ki {
 
     private static Position findClosestPosition(List<Position> listOfPositions, Position treasurePosition) {
         // Fall Karte schieben schmeißt Schatzkarte raus
-        if (treasurePosition == null){
+        if (treasurePosition == null) {
             int random = ThreadLocalRandom.current().nextInt(0, listOfPositions.size());
             return listOfPositions.get(random);
         }
@@ -143,7 +142,6 @@ public final class Ki {
 //        System.out.println("-----------------------------------------------------------------------");
 //        System.out.println("-----------------------next calculation--------------------------------");
 //        System.out.println("-----------------------------------------------------------------------");
-        MoveMessageType ret = new MoveMessageType();
         AwaitMoveMessageType awaitMoveMessage = gameSituation.getAwaitMoveMessage();
         Board board = new Board(awaitMoveMessage.getBoard());
 //        System.out.println(board.toString());
@@ -162,25 +160,25 @@ public final class Ki {
 //        System.out.println("allowedPositionsList=" + allowedPositionsList);
 //        System.out.println("Card rotations = " + cardRotations);
 
-        for (Card card : cardRotations) {
-            for (Position cardPosition : allowedPositionsList) {
-                PositionType shiftedPlayerposition = calculatePlayerPosition(cardPosition, getPlayerPosition(gameSituation, board));
-                MoveMessageType fakeMove = MazeComFactory.createMoveMessage(shiftedPlayerposition, shiftCard, cardPosition);
+        for (Card currentRotatedCard : cardRotations) {
+            for (Position currentCardPosition : allowedPositionsList) {
+                PositionType shiftedPlayerposition = calculatePlayerPosition(currentCardPosition, getPlayerPosition(gameSituation, board));
+                MoveMessageType fakeMove = MazeComFactory.createMoveMessage(shiftedPlayerposition, currentRotatedCard, currentCardPosition);
                 Board fakeBoard = board.fakeShift(fakeMove);
-                List<Position> reachablePositions =fakeBoard.getAllReachablePositions(shiftedPlayerposition);
+                List<Position> reachablePositions = fakeBoard.getAllReachablePositions(shiftedPlayerposition);
                 Position treasurePosition = fakeBoard.findTreasure(awaitMoveMessage.getTreasure());
 
                 if (treasurePosition == null) continue;
 
                 for (Position reachablePosition : reachablePositions) {
                     if (reachablePosition.equals(treasurePosition)) {
-                        ret.setNewPinPos(reachablePosition);
-                        ret.setShiftCard(card);
-                        ret.setShiftPosition(cardPosition);
+                        MoveMessageType directMove = MazeComFactory.createMoveMessage(reachablePosition, currentRotatedCard, currentCardPosition);
 //                        System.out.println("Habe direkten move gefunden");
-//                            System.out.println(ret.toString());
-//                            scanner.nextLine();
-                        return ret;
+//                        System.out.println(directMove.toString());
+//                        System.out.println(fakeBoard.toString());
+//                        scanner.nextLine();
+
+                        return directMove;
                     }
                 }
             }
