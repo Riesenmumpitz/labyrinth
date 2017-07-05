@@ -14,6 +14,9 @@ public final class ServerListener extends Thread {
 
     ServerListener(Socket socket) throws IOException {
         fromServer = new XmlInStream(socket.getInputStream());
+        // seltsam.. der bekommt keinen Stream vom Server.. 
+        // das ist mir jetzt auch neu .. :D
+        // hmmmm... ich frag mal die jungs neben mir :Dok
     }
 
     @Override
