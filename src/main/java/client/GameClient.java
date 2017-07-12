@@ -27,16 +27,39 @@ public final class GameClient {
     }
 
     public static void main(String[] args) throws Throwable {
-    	String serverIP = args[0];
-        int serverPort = Integer.parseInt(args[1]);
+        String serverIP;
+        int serverPort;
+        if (args != null && args.length >= 1) {
+            if (args[0] != null && args[0].length()!= 0) {
+                serverIP = args[0];
+            } else {
+                System.out.println("\"" + args[0] + "\" Ung\u00fcltige ServerIP, verbinde mit lcoalhost");
+                serverIP = "localhost";
+            }
+        } else {
+            System.out.println("Keine ServerIP \u00fcbergeben, verbinde mit lcoalhost");
+            serverIP = "localhost";
+        }
+        if (args.length >= 2) {
+            try {
+                serverPort = Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+                System.out.println("\"" + args[1] + "\" Ung\u00fcltiger Port, verbinde mit 5123");
+                serverPort = 5123;
+            }
+        } else {
+            System.out.println("Kein Serverport \u00fcbergeben, verbinde mit 5123");
+            serverPort = 5123;
+        }
 
         // Build socket
         SocketFactory Socketfactory = SocketFactory.getDefault();
+        System.out.println("Verbinde mit Server \""+serverIP+"\" auf Port \"" + serverPort +"\"" );
         Socket socket = Socketfactory.createSocket(serverIP, serverPort);
 
         // Start client
         GameClient client = new GameClient(socket);
-        ServerListener clientThread = new ServerListener(socket); 
+        ServerListener clientThread = new ServerListener(socket);
         clientThread.start();
         client.start();
 
